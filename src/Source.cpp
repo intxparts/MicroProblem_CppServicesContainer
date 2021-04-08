@@ -3,10 +3,32 @@
 
 #include "Container.h"
 
+class FakeComplexService : public Services::IComplexService
+{
+public:
+	int ComputeResult() override
+	{
+		return -1;
+	}
+};
+
+class TestContainer : public Framework::IContainer
+{
+public:
+	std::shared_ptr<Services::IPrintDBService> GetPrintDBService() override
+	{
+		return std::make_shared<Services::PrintDBService>();
+	}
+	std::shared_ptr<Services::IComplexService> GetComplexService() override
+	{
+		return std::make_shared<FakeComplexService>();
+	}
+};
+
 
 int main()
 {
-	auto container = Framework::Container::instance();
+	auto container = std::make_shared<TestContainer>();
 	auto dbService = container->GetPrintDBService();
 	auto records = dbService->GetPrinters();
 	auto complexService = container->GetComplexService();
